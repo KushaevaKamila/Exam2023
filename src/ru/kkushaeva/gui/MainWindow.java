@@ -3,13 +3,13 @@ package ru.kkushaeva.gui;
 import ru.kkushaeva.Converter;
 import ru.kkushaeva.graphics.*;
 import ru.kkushaeva.graphics.Painter;
-import ru.kkushaeva.math.Newton;
+import ru.kkushaeva.math.Function;
+import ru.kkushaeva.math.FunctionExp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainWindow extends JFrame {
 
@@ -40,7 +40,7 @@ public class MainWindow extends JFrame {
         xmax = new JLabel("xmax");
         ymax = new JLabel("ymax");
 
-        color1l = new JLabel("Цвет точек");
+        color1l = new JLabel("Явное задание");
         color2l = new JLabel("Цвет полинома");
         color3l = new JLabel("Цвет производной");
 
@@ -107,76 +107,10 @@ public class MainWindow extends JFrame {
             }
         });
 
-        Newton f = new Newton(new HashMap<Double, Double>());
-        var p = new HashMap<Double, Double>(); //список точек
-        var dp = new HashMap<Double, Double>(); //список точек, которые надо будет удалить
-        var pnts = new PointsPainter(cnv, p, color1.getBackground(), ch1.isSelected()); //painter по точкам, которые будем добавлять
-        //var fpnts = new FunctionPainter(cnv, p, color2.getBackground(), ch2.isSelected()); //painter для полинома
-        //var dfpnts = new DerivativePainter(cnv, p, color3.getBackground(), ch3.isSelected()); //painter для полинома
-        var fpnts = new FunctionPainter(cnv, f, color2.getBackground(), ch2.isSelected());
-        var dfpnts = new FunctionPainter(cnv, f.derivative(), color3.getBackground(), ch3.isSelected());
-
-        mainPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                //если нажимаем на левую кнопку мыши
-                if (e.getButton() == 1) {
-                    if (p.size() == 0) {
-                        p.put(cnv.xScr2Crt(e.getX()), cnv.yScr2Crt(e.getY()));
-                        pnts.addPoint(cnv.xScr2Crt(e.getX()), cnv.yScr2Crt(e.getY()));
-                        f.addNode(cnv.xScr2Crt(e.getX()), cnv.yScr2Crt(e.getY()));
-                        fpnts.setF(f);
-                        dfpnts.setF(f.derivative());
-                        //fpnts.setPoints(p);
-                        //dfpnts.setPoints(p);
-                        if (ch2.isSelected()) mainPanel.addPainter(fpnts);
-                        if (ch3.isSelected()) mainPanel.addPainter(dfpnts);
-                        if (ch1.isSelected()) mainPanel.addPainter(pnts);
-                    }
-                    for (double x:
-                            p.keySet()) {
-                        if (cnv.xDistCrt2Scr(cnv.xScr2Crt(e.getX()), x) <
-                                cnv.xDistCrt2Scr(0.0, Math.max(((double)(xmaxs.getValue()) - (double)xmins.getValue()) / 100., 0.05)))
-                            return;
-                    }
-                    p.put(cnv.xScr2Crt(e.getX()), cnv.yScr2Crt(e.getY()));
-                    pnts.addPoint(cnv.xScr2Crt(e.getX()), cnv.yScr2Crt(e.getY()));
-                    f.addNode(cnv.xScr2Crt(e.getX()), cnv.yScr2Crt(e.getY()));
-                    fpnts.setF(f);
-                    dfpnts.setF(f.derivative());
-                    //fpnts.addPoint(cnv.xScr2Crt(e.getX()), cnv.yScr2Crt(e.getY()));
-                    //dfpnts.setPoints(p);
-                    if (ch2.isSelected()) mainPanel.addPainter(fpnts);
-                    if (ch3.isSelected()) mainPanel.addPainter(dfpnts);
-                    if (ch1.isSelected()) mainPanel.addPainter(pnts);
-                }
-                //если нажимаем на правую кнопку мыши
-                else {
-                    for (double x:
-                            p.keySet()) {
-                        if ((cnv.xDistCrt2Scr(cnv.xScr2Crt(e.getX()), x) < cnv.xDistCrt2Scr(0.0, Math.min(((double)(xmaxs.getValue()) - (double)xmins.getValue()) / 100., 0.05)))
-                                && (cnv.yDistCrt2Scr(cnv.yScr2Crt(e.getY()), p.get(x)) < cnv.xDistCrt2Scr(0.0, Math.min(((double)(xmaxs.getValue()) - (double)xmins.getValue()) / 100., 0.05))))
-                        {
-                            dp.put(x, p.get(x));
-                            pnts.deletePoint(x, p.get(x));
-                            //dpnts.addPoint(x, p.get(x));
-                        }
-                    }
-                    for (double x:
-                            dp.keySet()) {
-                        p.remove(x, dp.get(x));
-                    }
-                    //fpnts.setPoints(p);
-                    //dfpnts.setPoints(p);
-                    Newton f = new Newton(p);
-                    fpnts.setF(f);
-                    dfpnts.setF(f.derivative());
-                    if (ch2.isSelected()) mainPanel.addPainter(fpnts);
-                    if (ch3.isSelected()) mainPanel.addPainter(dfpnts);
-                    if (ch1.isSelected()) mainPanel.addPainter(pnts);
-                }
-            }
-        });
+        //функция, заданная явно
+        Function f = new FunctionExp();
+        var fpnts = new FunctionPainterExp(cnv, f, color1.getBackground(), ch1.isSelected());
+        mainPanel.addPainter(fpnts);
 
         //изменения цветов
         color1.addMouseListener(new MouseAdapter() {
@@ -185,12 +119,12 @@ public class MainWindow extends JFrame {
                 var newColor =
                         JColorChooser.showDialog(
                                 MainWindow.this,
-                                "Выбор цвета точки",
+                                "Выбор цвета графика функции, заданной явно",
                                 color1.getBackground()
                         );
                 if (newColor != null){
                     color1.setBackground(newColor);
-                    pnts.setColor(newColor);
+                    fpnts.setColor(newColor);
                     mainPanel.repaint();
                 }
             }
@@ -213,29 +147,12 @@ public class MainWindow extends JFrame {
             }
         });
 
-        color3.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                var newColor =
-                        JColorChooser.showDialog(
-                                MainWindow.this,
-                                "Выбор цвета графика производной",
-                                color3.getBackground()
-                        );
-                if (newColor != null){
-                    color3.setBackground(newColor);
-                    dfpnts.setColor(newColor);
-                    mainPanel.repaint();
-                }
-            }
-        });
-
         //события для чекбоксов
         ch1.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (ch1.isSelected()) mainPanel.addPainter(pnts);
-                else mainPanel.removePainter(pnts);
+                if (ch1.isSelected()) mainPanel.addPainter(fpnts);
+                else mainPanel.removePainter(fpnts);
             }
         });
         ch2.addItemListener(new ItemListener() {
@@ -244,25 +161,11 @@ public class MainWindow extends JFrame {
                 if (ch2.isSelected()) {
                     mainPanel.addPainter(fpnts);
                     if (ch1.isSelected()) {
-                        mainPanel.addPainterToTheEnd(pnts);
-                        mainPanel.removePainter(pnts);
+                        mainPanel.addPainterToTheEnd(fpnts);
+                        mainPanel.removePainter(fpnts);
                     }
                 }
                 else mainPanel.removePainter(fpnts);
-            }
-        });
-        ch3.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (ch3.isSelected()) {
-                    mainPanel.addPainter(dfpnts);
-                    if (ch1.isSelected()) {
-                        mainPanel.addPainterToTheEnd(pnts);
-                        mainPanel.removePainter(pnts);
-                    }
-                }
-                else mainPanel.removePainter(dfpnts);
-                //if (ch1.isSelected()) mainPanel.addPainterToTheEnd(pnts);
             }
         });
 
