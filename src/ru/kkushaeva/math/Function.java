@@ -1,5 +1,5 @@
 package ru.kkushaeva.math;
 
-public interface Function {
-
+public interface Function{
+    Object invoke(Object x);
 }
