@@ -5,6 +5,8 @@ import ru.kkushaeva.math.Function;
 
 import java.awt.*;
 
+import static java.lang.Double.isNaN;
+
 public class FunctionPainterExp implements Painter{
     private Converter cnv;
     private Function f;
@@ -26,7 +28,7 @@ public class FunctionPainterExp implements Painter{
                 double yCrt1 = (double) f.invoke(xCrt1);
                 double xCrt2 = cnv.xScr2Crt(xScr + 1);
                 double yCrt2 = (double) f.invoke(xCrt2);
-                g.drawLine(cnv.xCrt2Scr(xCrt1), cnv.yCrt2Scr(yCrt1), cnv.xCrt2Scr(xCrt2), cnv.yCrt2Scr(yCrt2));
+                if (!isNaN(yCrt1) && !isNaN(yCrt2)) g.drawLine(cnv.xCrt2Scr(xCrt1), cnv.yCrt2Scr(yCrt1), cnv.xCrt2Scr(xCrt2), cnv.yCrt2Scr(yCrt2));
             }
         }
     }

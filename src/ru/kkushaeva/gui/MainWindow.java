@@ -19,11 +19,11 @@ public class MainWindow extends JFrame {
     private JPanel controlPanel;
     private GroupLayout gl; //раскладка
     private GroupLayout glcp;
-    private JLabel xmin, ymin, xmax, ymax, color1l, color2l, color3l;
-    private JSpinner xmins, ymins, xmaxs, ymaxs;
-    private SpinnerNumberModel nmxmins, nmxmaxs, nmymins, nmymaxs;
-    private JPanel color1, color2, color3;
-    private JCheckBox ch1, ch2, ch3;
+    private JLabel xmin, ymin, xmax, ymax, color1l, color2l, tMin, tMax;
+    private JSpinner xmins, ymins, xmaxs, ymaxs, tMinS, tMaxS;
+    private SpinnerNumberModel nmxmins, nmxmaxs, nmymins, nmymaxs, nmtmin, nmtmax;
+    private JPanel color1, color2;
+    private JCheckBox ch1, ch2;
 
     public MainWindow(){
         setSize(minSize);
@@ -43,14 +43,20 @@ public class MainWindow extends JFrame {
 
         color1l = new JLabel("Явное задание");
         color2l = new JLabel("Параметрическое задание");
-        color3l = new JLabel("Цвет производной");
 
         color1 = new JPanel();
         color2 = new JPanel();
-        color3 = new JPanel();
         color1.setBackground(Color.BLACK);
         color2.setBackground(Color.GREEN);
-        color3.setBackground(Color.ORANGE);
+
+        tMin = new JLabel("tMin");
+        tMax = new JLabel("tMax");
+
+        nmtmin = new SpinnerNumberModel(-10.0,-1000.0,9.9,0.1);
+        nmtmax = new SpinnerNumberModel(10.0,-9.9,1000.0,0.1);
+
+        tMinS = new JSpinner(nmtmin);
+        tMaxS = new JSpinner(nmtmax);
 
         nmxmins = new SpinnerNumberModel(-5.0, -100.0, 4.9, 0.1);
         nmxmaxs = new SpinnerNumberModel(5.0, -4.9, 100.0, 0.1);
@@ -64,7 +70,6 @@ public class MainWindow extends JFrame {
 
         ch1 = new JCheckBox("", true);
         ch2 = new JCheckBox("", true);
-        ch3 = new JCheckBox("", true);
 
         var cnv = new Converter((double)xmins.getValue(), (double)xmaxs.getValue(),
                 (double)ymins.getValue(), (double)ymaxs.getValue(),
@@ -115,8 +120,19 @@ public class MainWindow extends JFrame {
 
         //функция, заданная параметрически
         Function g = new FunctionImp();
-        var gpnts = new FunctionPainterImp(cnv, g, color2.getBackground(), ch2.isSelected(), -10., 10.);
+        var gpnts = new FunctionPainterImp(cnv, g, color2.getBackground(), ch2.isSelected(), (double)tMinS.getValue(), (double)tMaxS.getValue());
         mainPanel.addPainter(gpnts);
+
+        tMinS.addChangeListener(e -> {
+            nmtmax.setMinimum((Double)nmtmin.getValue() + 2 * (Double)nmtmax.getStepSize());
+            gpnts.setTMin((double)tMinS.getValue());
+            mainPanel.repaint();
+        });
+        tMaxS.addChangeListener(e -> {
+            nmtmin.setMaximum((Double)nmtmax.getValue() - 2 * (Double)nmtmin.getStepSize());
+            gpnts.setTMax((double)tMaxS.getValue());
+            mainPanel.repaint();
+        });
 
         //изменения цветов
         color1.addMouseListener(new MouseAdapter() {
@@ -226,14 +242,16 @@ public class MainWindow extends JFrame {
                                 .addGap(8)
                                 .addComponent(color2l, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE))
                         .addGroup(glcp.createSequentialGroup()
-                                .addComponent(ch3)
+                                .addComponent(tMin)
                                 .addGap(8)
-                                .addComponent(color3, 45, 45, 45)
+                                .addComponent(tMinS)
                                 .addGap(8)
-                                .addComponent(color3l, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE))
+                                .addComponent(tMax)
+                                .addGap(8)
+                                .addComponent(tMaxS)
                 )
                 .addGap(8)
-        );
+                ));
 
         glcp.setVerticalGroup(glcp.createSequentialGroup()
                 .addGap(8)
@@ -268,12 +286,13 @@ public class MainWindow extends JFrame {
                                         .addComponent(color2l, GroupLayout.Alignment.CENTER))
                                 .addGap(5)
                                 .addGroup(glcp.createParallelGroup()
-                                        .addComponent(ch3)
-                                        .addComponent(color3, 20, 20, 20)
-                                        .addComponent(color3l, GroupLayout.Alignment.CENTER))
+                                        .addComponent(tMin)
+                                        .addComponent(tMinS)
+                                        .addComponent(tMax)
+                                        .addComponent(tMaxS)
                         )
                 )
                 .addGap(8)
-        );
+        ));
     }
 }
