@@ -28,7 +28,7 @@ public class FunctionPainterImp implements Painter{
         double dt = 0.0001;
         if (check) {
             g.setColor(color);
-            for (double t = tMin; t < tMax; t+=dt) {
+            for (double t = tMin; t < tMax; t += dt) {
                 Pair a = (Pair)f.invoke(t);
                 double xCrt1 = a.getX();
                 double yCrt1 = a.getY();
