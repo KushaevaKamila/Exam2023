@@ -5,6 +5,7 @@ package ru.kkushaeva.math;
 public class FunctionImp implements Function{
     @Override
     public Object invoke(Object x) {
-        return null;
+        double t = (double)x;
+        return new Pair(Math.sin(4*t), Math.cos(t));
     }
 }

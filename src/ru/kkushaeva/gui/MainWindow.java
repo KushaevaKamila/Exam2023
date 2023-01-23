@@ -5,6 +5,7 @@ import ru.kkushaeva.graphics.*;
 import ru.kkushaeva.graphics.Painter;
 import ru.kkushaeva.math.Function;
 import ru.kkushaeva.math.FunctionExp;
+import ru.kkushaeva.math.FunctionImp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -112,6 +113,11 @@ public class MainWindow extends JFrame {
         var fpnts = new FunctionPainterExp(cnv, f, color1.getBackground(), ch1.isSelected());
         mainPanel.addPainter(fpnts);
 
+        //функция, заданная параметрически
+        Function g = new FunctionImp();
+        var gpnts = new FunctionPainterImp(cnv, g, color2.getBackground(), ch2.isSelected(), -10., 10.);
+        mainPanel.addPainter(gpnts);
+
         //изменения цветов
         color1.addMouseListener(new MouseAdapter() {
             @Override
@@ -136,12 +142,12 @@ public class MainWindow extends JFrame {
                 var newColor =
                         JColorChooser.showDialog(
                                 MainWindow.this,
-                                "Выбор цвета графика полинома",
+                                "Выбор цвета графика функции, заданной параметрически",
                                 color2.getBackground()
                         );
                 if (newColor != null){
                     color2.setBackground(newColor);
-                    fpnts.setColor(newColor);
+                    gpnts.setColor(newColor);
                     mainPanel.repaint();
                 }
             }
@@ -158,14 +164,8 @@ public class MainWindow extends JFrame {
         ch2.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (ch2.isSelected()) {
-                    mainPanel.addPainter(fpnts);
-                    if (ch1.isSelected()) {
-                        mainPanel.addPainterToTheEnd(fpnts);
-                        mainPanel.removePainter(fpnts);
-                    }
-                }
-                else mainPanel.removePainter(fpnts);
+                if (ch2.isSelected()) mainPanel.addPainter(gpnts);
+                else mainPanel.removePainter(gpnts);
             }
         });
 
