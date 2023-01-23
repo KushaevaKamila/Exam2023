@@ -1,4 +1,8 @@
 package ru.kkushaeva.math;
-
-public class FunctionExp {
+//класс для работы с функциями, заданными явно
+public class FunctionExp implements Function{
+    @Override
+    public Object invoke(Object x) {
+        return null;
+    }
 }

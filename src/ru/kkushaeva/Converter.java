@@ -14,8 +14,6 @@ public class Converter {
         this.yMax = yMax;
         this.width = width;
         this.height = height;
-        /*this.width = width - 1;
-        this.height = height - 1;*/
     }
 
     public double getxDen(){

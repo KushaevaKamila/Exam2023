@@ -1,5 +1,8 @@
 package ru.kkushaeva.math;
-
-public class FunctionImp {
-
+//класс для работы с функциями, заданными параметрически
+public class FunctionImp implements Function{
+    @Override
+    public Object invoke(Object x) {
+        return null;
+    }
 }
