@@ -5,6 +5,6 @@ package ru.kkushaeva.math;
 public class FunctionExp implements Function{
     @Override
     public Object invoke(Object x) {
-        return (double)x+1/Math.pow((double)x, 3);
+        return (double)x+1./Math.pow((double)x, 3);
     }
 }

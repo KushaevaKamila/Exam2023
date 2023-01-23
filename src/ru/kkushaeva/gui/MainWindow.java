@@ -41,7 +41,7 @@ public class MainWindow extends JFrame {
         ymax = new JLabel("ymax");
 
         color1l = new JLabel("Явное задание");
-        color2l = new JLabel("Цвет полинома");
+        color2l = new JLabel("Параметрическое задание");
         color3l = new JLabel("Цвет производной");
 
         color1 = new JPanel();
@@ -275,7 +275,5 @@ public class MainWindow extends JFrame {
                 )
                 .addGap(8)
         );
-
-
     }
 }
